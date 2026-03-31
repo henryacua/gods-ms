@@ -1,0 +1,291 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type UserLoginResponse {
+  token: String!
+}
+
+type ResetPasswordResponse {
+  token: String!
+  expiresAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Organization {
+  id: Int!
+  name: String!
+  logo: String
+  url: String
+  deletedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Store {
+  id: Int!
+  name: String!
+  address: String!
+  city: String!
+  phone: String
+  country: String
+  organizationId: Int!
+  organization: Organization!
+  maxPendingAppointments: Int!
+  deletedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type User {
+  id: Int!
+  name: String!
+  surname: String!
+  email: String!
+  phone: String!
+  photo: String
+  birthday: DateTime!
+  storeId: Int
+  store: Store
+  organizationId: Int
+  organization: Organization
+  terms: Boolean!
+  notification: Boolean
+  roles: [Role!]!
+  resetPasswordToken: ResetPasswordResponse
+  deletedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""The roles of the user"""
+enum Role {
+  SUPER_ADMIN
+  MANAGER
+  ADMIN
+  STAFF
+  USER
+}
+
+type Slot {
+  id: Int!
+  staffId: Int!
+  startTime: String!
+  endTime: String!
+  dayOfWeek: DayOfWeek!
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+type Appointment {
+  id: Int!
+  userId: Int
+  user: User
+  staffId: Int!
+  staff: User!
+  storeId: Int!
+  store: Store!
+  date: String!
+  startTime: String!
+  endTime: String!
+  status: AppointmentStatus!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum AppointmentStatus {
+  PENDING
+  CANCELLED
+  DONE
+}
+
+type TimeIntervalType {
+  startTime: String!
+  endTime: String!
+  available: Boolean!
+}
+
+type StaffMemberType {
+  id: Int!
+  name: String!
+  surname: String!
+  photo: String
+  slotDays: [DayOfWeek!]!
+}
+
+type Query {
+  status: String!
+  getAllUsers: [User!]!
+  getUserByEmail(email: String!): User!
+  login(loginData: UserLoginDto!): UserLoginResponse!
+  refreshToken: UserLoginResponse!
+  getAllStores: [Store!]!
+  getStoreById(id: Float!): Store!
+  getAllOrganizations: [Organization!]!
+  getOrganizationById(id: Float!): Organization!
+  getAllSlots: [Slot!]!
+  getStaffWithSlots(storeId: Int!): [StaffMemberType!]!
+  getAvailableIntervals(staffId: Int!, date: String!, excludeAppointmentId: Int): [TimeIntervalType!]!
+  getMyAppointments: [Appointment!]!
+  getStaffAppointments: [Appointment!]!
+}
+
+input UserLoginDto {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  selectOrganization(orgId: Int!): UserLoginResponse!
+  selectStore(storeId: Int!): UserLoginResponse!
+  updateUser(userData: UpdateUserDto!): User!
+  deleteUser(userId: Int!): Boolean!
+  addNewUser(userData: CreateUserDto!): User!
+  createUser(userData: AuthCreateUserDto!): User!
+  sendEmailResetPassword(email: String!): Boolean!
+  resetPassword(resetPasswordData: ResetPasswordDto!): Boolean!
+  createStore(createStoreData: CreateStoreDto!): Store!
+  updateStore(updateStoreData: UpdateStoreDto!): Store!
+  deleteStore(id: Float!): Boolean!
+  createOrganization(createOrganizationData: CreateOrganizationDto!): Organization!
+  updateOrganization(updateOrganizationData: UpdateOrganizationDto!): Organization!
+  deleteOrganization(id: Float!): Boolean!
+  createSlot(createSlotData: CreateSlotDto!): Slot!
+  updateSlot(updateSlotData: UpdateSlotDto!): Slot!
+  deleteSlot(deleteSlotId: Int!): Boolean!
+  bookAppointment(bookingData: BookAppointmentDto!): Appointment!
+  cancelAppointment(id: Int!): Boolean!
+  markAppointmentDone(id: Int!): Appointment!
+  updateAppointment(dto: UpdateAppointmentDto!): Appointment!
+}
+
+input UpdateUserDto {
+  id: Int!
+  name: String
+  surname: String
+  email: String
+  password: String
+  phone: String
+  photo: String
+  birthday: DateTime
+  storeId: Int
+  organizationId: Int
+  terms: Boolean
+  notification: Boolean
+  roles: [Role!]
+  resetPasswordToken: TokenDto
+}
+
+input TokenDto {
+  token: String!
+  expiresAt: DateTime!
+}
+
+input CreateUserDto {
+  name: String!
+  surname: String!
+  email: String!
+  password: String!
+  phone: String!
+  photo: String
+  birthday: DateTime!
+  storeId: Int
+  terms: Boolean
+  notification: Boolean
+  roles: [Role!]
+}
+
+input AuthCreateUserDto {
+  name: String!
+  surname: String!
+  email: String!
+  password: String!
+  phone: String!
+  photo: String
+  birthday: DateTime!
+  roles: [Role!]!
+  storeId: Int
+  organizationId: Int
+  terms: Boolean
+  notification: Boolean
+}
+
+input ResetPasswordDto {
+  userId: Int!
+  token: String!
+  newPassword: String!
+}
+
+input CreateStoreDto {
+  name: String!
+  address: String!
+  city: String!
+  phone: String
+  country: String
+  organizationId: Int!
+}
+
+input UpdateStoreDto {
+  id: Int!
+  name: String
+  address: String
+  city: String
+  phone: String
+  country: String
+  organizationId: Int
+  maxPendingAppointments: Int
+  deletedAt: DateTime
+}
+
+input CreateOrganizationDto {
+  name: String!
+  logo: String
+  url: String
+}
+
+input UpdateOrganizationDto {
+  id: Int!
+  name: String
+  logo: String
+  url: String
+}
+
+input CreateSlotDto {
+  startTime: String!
+  endTime: String!
+  dayOfWeek: DayOfWeek!
+}
+
+input UpdateSlotDto {
+  id: Int!
+  startTime: String
+  endTime: String
+  dayOfWeek: DayOfWeek
+}
+
+input BookAppointmentDto {
+  staffId: Int!
+  storeId: Int!
+  date: String!
+  startTime: String!
+  endTime: String!
+}
+
+input UpdateAppointmentDto {
+  id: Int!
+  date: String!
+  startTime: String!
+  endTime: String!
+}
